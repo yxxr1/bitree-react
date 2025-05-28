@@ -16,6 +16,9 @@ const biTree = new BiTree();
 
 function App() {
   const [data, setData] = useState<(number | null)[][]>([]);
+  const updateData = () => {
+    setData(biTree.flattenTree());
+  }
 
   const onRandomGen = () => {
     const numbers = new Set<number>();
@@ -28,7 +31,7 @@ function App() {
 
     biTree.buildTree(Array.from(numbers));
 
-    setData(biTree.flattenTree());
+    updateData();
   }
 
   useEffect(() => {
@@ -37,7 +40,7 @@ function App() {
 
   const onAdd = (value: number) => {
     if (biTree.addNode(value)) {
-      setData(biTree.flattenTree());
+      updateData();
       alert("Значение добавлено");
     } else {
       alert("Значение существует");
@@ -45,7 +48,7 @@ function App() {
   }
   const onDelete = (value: number) => {
     if (biTree.deleteNode(value)) {
-      setData(biTree.flattenTree());
+      updateData();
       alert("Значение удалено");
     } else {
       alert("Значение не найдено");
@@ -69,10 +72,14 @@ function App() {
       }
     }
   }
+  const onRebuildClick = () => {
+    biTree.buildTree(biTree.widthTraverse());
+    updateData();
+  }
 
   return (
       <div>
-        <Form onAdd={onAdd} onDelete={onDelete} onFind={onFind} onRandomGen={onRandomGen} />
+        <Form onAdd={onAdd} onDelete={onDelete} onFind={onFind} onRandomGen={onRandomGen} onRebuildClick={onRebuildClick} />
         <Tree data={data} onNodeClick={onNodeClick} />
       </div>
   );
