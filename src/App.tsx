@@ -58,11 +58,22 @@ function App() {
       alert("Значение не найдено");
     }
   }
+  const onNodeClick = (subTreeValue: number) => {
+    const value = prompt("search value");
+
+    if (value) {
+      if (biTree.findValue(parseInt(value), subTreeValue)) {
+        alert("Значение найдено");
+      } else {
+        alert("Значение не найдено");
+      }
+    }
+  }
 
   return (
       <div>
         <Form onAdd={onAdd} onDelete={onDelete} onFind={onFind} onRandomGen={onRandomGen} />
-        <Tree data={data} />
+        <Tree data={data} onNodeClick={onNodeClick} />
       </div>
   );
 }

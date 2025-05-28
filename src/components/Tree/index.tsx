@@ -2,6 +2,7 @@ import React from "react";
 
 interface TreeProps {
     data: (number | null)[][];
+    onNodeClick?: (value: number) => void;
 }
 
 const NODE_SIZE = 50;
@@ -16,7 +17,7 @@ const NODE_STYLES = {
     alignItems: "center",
 }
 
-export const Tree: React.FC<TreeProps> = ({ data }) => {
+export const Tree: React.FC<TreeProps> = ({ data, onNodeClick }) => {
     const size = data.length ? data[data.length - 1].length : 0;
     const width = size * NODE_SIZE;
 
@@ -31,9 +32,11 @@ export const Tree: React.FC<TreeProps> = ({ data }) => {
                             <div
                                 style={{
                                     ...NODE_STYLES,
+                                    ...(onNodeClick ? { cursor: "pointer" } : {}),
                                     top: NODE_SIZE * level,
                                     left: index * containerWidth + ((containerWidth - NODE_SIZE) / 2)
                                 }}
+                                onClick={() => onNodeClick?.(value)}
                             >
                                 {value}
                             </div>

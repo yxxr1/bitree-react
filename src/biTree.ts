@@ -96,8 +96,9 @@ export class BiTree {
         return { node: currentNode, parentNode: currentNodeParent };
     }
 
-    findValue(value: number, tree?: TreeNode): TreeNode | null {
-        return this._findValue(tree || this.tree, value).node;
+    findValue(value: number, subTreeValue?: number): TreeNode | null {
+        const searchRoot = subTreeValue !== undefined ? this._findValue(this.tree, subTreeValue).node : this.tree;
+        return this._findValue(searchRoot, value).node;
     }
 
     widthTraverse(): number[] {
