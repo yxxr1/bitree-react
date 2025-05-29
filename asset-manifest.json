@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/bitree-react/static/css/main.551816ac.css",
+    "main.js": "/bitree-react/static/js/main.df32677c.js",
+    "index.html": "/bitree-react/index.html",
+    "main.551816ac.css.map": "/bitree-react/static/css/main.551816ac.css.map",
+    "main.df32677c.js.map": "/bitree-react/static/js/main.df32677c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.551816ac.css",
+    "static/js/main.df32677c.js"
+  ]
+}
