@@ -19,6 +19,7 @@ export class BiTree {
     }
 
     buildTree(data: number[]) {
+        // сортировка и удаление одинаковых значений из входных данных
         const sortedData = data.sort((a, b) => a - b).reduce<number[]>((acc, num, ind, arr) => {
             if (ind && arr[ind - 1] === num) {
                 return acc;
@@ -29,18 +30,24 @@ export class BiTree {
             return acc;
         }, []);
 
+        // рекурсивное построение дерева из отсортированного массива уникальных чисел
         const addNode = (leftIndex: number, rightIndex: number): TreeNode | null => {
+            // длина текущего диапазона
             const rangeLength = rightIndex - leftIndex;
 
             if (!rangeLength) {
                 return null;
             }
 
+            // центр диапазона - значение текущей ноды
             const middleIndex = leftIndex + Math.floor(rangeLength / 2);
 
             return {
                 value: sortedData[middleIndex],
+                // левая нода - в диапазоне от начала текущего диапазона до текущей ноды
+                // т.к. массив отсортирован, то значения будут меньше что соответствует структуре бинарного дерева
                 left: addNode(leftIndex, middleIndex),
+                // правая нода - в диапазоне от следующего элемента после элемента текущей ноды до конца текущего диапазона
                 right: addNode(middleIndex + 1, rightIndex),
             };
         }
@@ -52,13 +59,18 @@ export class BiTree {
         if (this.tree) {
             let currentNode: EmptyTreeNode = this.tree;
 
+            // цикл  завершится когда будет найдено место для нужного значения
             while (currentNode.value !== null) {
+                // меньше - поиск слева
                 if (value < currentNode.value) {
+                    // если меньше значений нет - записывается нода с пустым значением и цикл завершается
                     if (currentNode.left === null) {
                         currentNode.left = { value: null, left: null, right: null };
                     }
 
+                    // переход к следующей ноде по дереву
                     currentNode = currentNode.left!;
+                    // больше -= поиск справа
                 } else if (value > currentNode.value) {
                     if (currentNode.right === null) {
                         currentNode.right = { value: null, left: null, right: null };
@@ -66,14 +78,17 @@ export class BiTree {
 
                     currentNode = currentNode.right!;
                 } else {
+                    // значение уже есть в дереве
                     return null;
                 }
             }
 
+            // запись значения в новую ноду
             currentNode.value = value;
 
             return currentNode as TreeNode;
         } else {
+            // если дерево не было построено, вызывается buildTree с переданным значением
             this.buildTree([value]);
 
             return this.tree;
@@ -83,6 +98,7 @@ export class BiTree {
     _findValue(tree: TreeNode | null, value: number) {
         let currentNode: TreeNode | null = tree, currentNodeParent = null;
 
+        // цикл продолжается пока есть ноды и значение не найдено
         while (currentNode !== null && currentNode.value !== value) {
             currentNodeParent = currentNode;
 
@@ -97,10 +113,12 @@ export class BiTree {
     }
 
     findValue(value: number, subTreeValue?: number): TreeNode | null {
+        // если передано subTreeValue - поиск начинается с ноды с таким значением
         const searchRoot = subTreeValue !== undefined ? this._findValue(this.tree, subTreeValue).node : this.tree;
         return this._findValue(searchRoot, value).node;
     }
 
+    // обход дерева в ширину
     widthTraverse(): number[] {
         const result = [];
 
@@ -121,51 +139,54 @@ export class BiTree {
     deleteNode(value: number): true | false {
         const { node, parentNode } = this._findValue(this.tree, value);
 
-        const replaceNode = (parentNode: TreeNode, newNode: TreeNode | null) => {
-            if (parentNode.left === node) {
-                parentNode.left = newNode;
+        // замена удаляемой ноды ноды
+        const replaceNode = (newNode: TreeNode | null) => {
+            if (parentNode) {
+                if (parentNode.left === node) {
+                    parentNode.left = newNode;
+                } else {
+                    parentNode.right = newNode;
+                }
             } else {
-                parentNode.right = newNode;
+                // если у ноды нет родителя - newNode новый корень
+                this.tree = newNode;
             }
         }
 
         if (node) {
             if (node.left === null && node.right === null) {
-                if (parentNode) {
-                    replaceNode(parentNode, null);
-                } else {
-                    this.tree = null;
-                }
+                // если потомков нет - удаляем ноду
+                replaceNode(null);
             } else if (node.left !== null && node.right !== null) {
                 let newNodeParent = node;
                 let newNode = node.right;
 
+                // находим наименьшее значение справа (самое левое), т.к. оно будет больше всех значений слева от удаляемой ноды, но меньше всех справа
                 while (newNode.left !== null) {
                     newNodeParent = newNode;
                     newNode = newNode.left;
                 }
 
                 if (newNodeParent === node) {
+                    // если первая нода справа - наименьшая, то в нее переносится левая ветка удаляемой ноды
+                    // ветка справа остается, ветка слева была null, т.к. нода наименьшая
                     newNode.left = node.left;
                 } else {
+                    // слева ветка null, т.к. нода наименьшая
+                    // правая ветка переносится на место этой ноды
                     newNodeParent.left = newNode.right;
+                    // нода получает потомков удаляемой ноды
                     newNode.left = node.left;
                     newNode.right = node.right;
                 }
 
-                if (parentNode) {
-                    replaceNode(parentNode, newNode);
-                } else {
-                    this.tree = newNode;
-                }
+                // замена удаляемой ноды на найденную
+                replaceNode(newNode);
             } else {
+                // если есть 1 потомок - переносим его родителю
                 const newNode = node.left || node.right;
 
-                if (parentNode) {
-                    replaceNode(parentNode, newNode);
-                } else {
-                    this.tree = newNode;
-                }
+                replaceNode(newNode);
             }
 
             return true;
@@ -174,18 +195,23 @@ export class BiTree {
         return false;
     }
 
+    // возвращает структуру для визуализации
     flattenTree(): (number | null)[][] {
         const result: (number | null)[][] = [];
 
         const flatten = (nodes: (TreeNode | null)[]) => {
+            // если все ноды пустые - завершение рекурсии
             if (!nodes.filter(node => node).length) return;
 
+            // в результирующий массив добавляются значения нод на этом уровне
             result.push(nodes.map(node => typeof node?.value === "number" ? node?.value : null));
 
+            // массив потомков всех нод на текущем уровне
             const children = nodes.reduce<(TreeNode | null)[]>((acc, node) => {
                 if (node) {
                     acc.push(node.left, node.right);
                 } else {
+                    // если ноды нет - потомки null
                     acc.push(null, null);
                 }
 
