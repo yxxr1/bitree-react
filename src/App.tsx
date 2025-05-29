@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Tree } from "./components/Tree";
 import { Form } from "./components/Form";
 import { BiTree } from "./biTree";
@@ -20,7 +20,7 @@ function App() {
     setData(biTree.flattenTree());
   }
 
-  const onRandomGen = () => {
+  const onRandomGen = useCallback(() => {
     const numbers = new Set<number>();
 
     const count = getRandomInt(INITIAL_NUMBERS_COUNT_MIN, INITIAL_NUMBERS_COUNT_MAX);
@@ -32,11 +32,11 @@ function App() {
     biTree.buildTree(Array.from(numbers));
 
     updateData();
-  }
+  }, []);
 
   useEffect(() => {
     onRandomGen();
-  }, []);
+  }, [onRandomGen]);
 
   const onAdd = (value: number) => {
     if (biTree.addNode(value)) {

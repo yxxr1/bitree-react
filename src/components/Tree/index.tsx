@@ -26,7 +26,7 @@ export const Tree: React.FC<TreeProps> = ({ data, onNodeClick }) => {
             {data.reduce<React.ReactElement[]>((acc, levelData, level) => {
                 const containerWidth = width / levelData.length;
 
-                levelData.map((value, index) => {
+                levelData.forEach((value, index) => {
                     if (value !== null) {
                         const node = (
                             <div
